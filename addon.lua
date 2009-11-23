@@ -20,19 +20,19 @@ function addon:create_button(n)
 end
 
 function addon:enter_vehicle ()
-	MainMenuBarVehicleLeaveButton:ClearAllPoints()
-	MainMenuBarVehicleLeaveButton:SetPoint(ML, ActionButton, MR, 3, 0)
+	local f = MainMenuBarVehicleLeaveButton
+
+	f:ClearAllPoints()
+	f:SetPoint('LEFT', ActionButton12, 'RIGHT', 3, 0)
+	f:SetFrameStrata('HIGH')
+	f.SetPoint = self.nothing
 end
 
 function addon:exit_vehicle ()
 end
 
 function addon:initialize(name)
-	if name == 'Visor' then
-		--[[local buttons = self.buttons
-		for i = 1, 120 do
-		buttons[i] = self:create_button(i)
-		end]]
+	if name == 'idStackedBottomBars' then
 	end
 end
 
@@ -48,7 +48,8 @@ function addon:enable()
 
 	ShapeshiftBarFrame:ClearAllPoints()
 	ShapeshiftBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, 0, 5)
-	PetActionBarFrame:ClearAllPoints() PetActionBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, -36, 5)
+	PetActionBarFrame:ClearAllPoints()
+	PetActionBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, -36, 5)
 	MultiCastActionBarFrame:ClearAllPoints()
 	MultiCastActionBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, 0, 5)
 	MultiCastActionBarFrame.SetPoint = self.nothing
@@ -122,7 +123,7 @@ addon:RegisterEvent('PLAYER_LOGIN')
 addon:RegisterEvent('UNIT_ENTERED_VEHICLE')
 addon:RegisterEvent('UNIT_EXITED_VEHICLE')
 
-_G.Visor = addon
+_G.idStackedBottomBars = addon
 
 
 
