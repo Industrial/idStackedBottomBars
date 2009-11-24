@@ -3,6 +3,8 @@ local ML, MC, MR = 'LEFT', 'CENTER', 'RIGHT'
 local BL, BC, BR = 'BOTTOMLEFT', 'BOTTOM', 'BOTTOMRIGHT'
 local _G = _G
 
+local padding = 6
+
 local addon = _G.CreateFrame('Frame')
 
 addon.buttons = {}
@@ -15,8 +17,48 @@ function addon:hide(f)
 	f.Show = self.nothing
 end
 
-function addon:create_button(n)
-	local button = CreateFrame('Frame')
+function addon:process_button(i, button, parent_name)
+	local button_name = button:GetName()
+
+	button:SetParent(parent_name)
+	button:ClearAllPoints()
+
+	if i > 1 then
+		local previous_button_name = button_name:match('%a+') .. i - 1
+		button:SetPoint(ML, previous_button_name, MR, padding, 0)
+	else
+		button:SetPoint(BL, parent_name, BL)
+	end
+end
+
+function addon:set_frame_positions()
+	local button
+
+	for i = 1, 12 do
+		self:process_button(i, _G['MultiBarRightButton' .. i], 'MultiBarRight')
+		self:process_button(i, _G['MultiBarLeftButton' .. i], 'MultiBarLeft')
+	end
+
+	local b = MultiBarRightButton1
+	local w = b:GetWidth()
+	local h = b:GetHeight()
+	MultiBarRight:ClearAllPoints()
+	MultiBarRight:SetPoint(BL, 'MultiBarBottomRightButton1', TL, 0, 5)
+	MultiBarRight:SetWidth(12 * w + 11 * padding)
+	MultiBarRight:SetHeight(h)
+	MultiBarLeft:ClearAllPoints()
+	MultiBarLeft:SetPoint(BC, 'MultiBarRight', TC, 0, 5)
+	MultiBarLeft:SetWidth(12 * w + 11 * padding)
+	MultiBarLeft:SetHeight(h)
+
+	ShapeshiftBarFrame:ClearAllPoints()
+	ShapeshiftBarFrame:SetPoint(BL, 'MultiBarLeftButton1', TL, 0, 5)
+	PetActionBarFrame:ClearAllPoints()
+	PetActionBarFrame:SetPoint(BL, 'MultiBarLeftButton1', TL, -36, 5)
+	MultiCastActionBarFrame:ClearAllPoints()
+	MultiCastActionBarFrame:SetPoint(BL, 'MultiBarLeftButton1', TL, 0, 5)
+	MultiCastActionBarFrame.SetPoint = self.nothing
+	MultiBarBottomRight:ClearAllPoints() MultiBarBottomRight:SetPoint(BL, 'MultiBarBottomLeftButton1', TL, 0, 5)
 end
 
 function addon:enter_vehicle ()
@@ -26,9 +68,12 @@ function addon:enter_vehicle ()
 	f:SetPoint('LEFT', ActionButton12, 'RIGHT', 3, 0)
 	f:SetFrameStrata('HIGH')
 	f.SetPoint = self.nothing
+
+	self:set_frame_positions()
 end
 
 function addon:exit_vehicle ()
+	self:set_frame_positions()
 end
 
 function addon:initialize(name)
@@ -45,16 +90,6 @@ function addon:enable()
 	p.ShapeShiftBarFrame = nil
 	p.MultiCastActionBarFrame = nil
 	p.PossessBarFrame = nil
-
-	ShapeshiftBarFrame:ClearAllPoints()
-	ShapeshiftBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, 0, 5)
-	PetActionBarFrame:ClearAllPoints()
-	PetActionBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, -36, 5)
-	MultiCastActionBarFrame:ClearAllPoints()
-	MultiCastActionBarFrame:SetPoint(BL, 'MultiBarBottomRightButton1', TL, 0, 5)
-	MultiCastActionBarFrame.SetPoint = self.nothing
-	MultiBarBottomRight:ClearAllPoints()
-	MultiBarBottomRight:SetPoint(BL, 'MultiBarBottomLeftButton1', TL, 0, 5)
 
 	self:hide(MainMenuBarPageNumber)
 	self:hide(ActionBarUpButton)
@@ -103,6 +138,9 @@ function addon:enable()
 	self:hide(LFGMicroButton)
 	self:hide(MainMenuMicroButton)
 	self:hide(HelpMicroButton)
+
+	self:set_frame_positions()
+	hooksecurefunc('UIParent_ManageFramePositions', function() self:set_frame_positions() end)
 end
 
 function addon:onevent(event, ...)
